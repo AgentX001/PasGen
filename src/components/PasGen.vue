@@ -38,7 +38,7 @@ export default {
       // prettier-ignore
       let lettersSet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
       // prettier-ignore
-      const symbolsSet = [ "=","+","-","^","?","!","%","&","*","$","#","^","@","|"];
+      const symbolsSet = ["=","+","-","^","?","!","%","&","*","$","#","^","@","|"];
       // prettier-ignore
       const digitsSet = ["0", "1", "2", "3", "4", "5", "5", "6", "7", "8", "9"];
 
@@ -55,12 +55,27 @@ export default {
         set = set.concat(set);
       }
 
-      for (let i = set.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [set[i], set[j]] = [set[j], set[i]];
-      }
+      const _generate = () => {
+        const randomSet = _.shuffle(set);
+        this.password = randomSet.slice(0, this.length).join("");
 
-      this.password = set.slice(0, this.length).join("");
+        if (this.digits && !/\d/.test(this.password)) {
+          _generate();
+        }
+
+        if (this.symbols) {
+          let containSymbol = false;
+          this.password.split("").forEach(char => {
+            if (symbolsSet.indexOf(char) !== -1) {
+              containSymbol = true;
+            }
+          });
+          if (!containSymbol) {
+            _generate();
+          }
+        }
+      };
+      _generate();
     },
 
     calcStrength() {
